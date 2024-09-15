@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const initialState = {
@@ -28,7 +28,7 @@ export const addAsyncTodo = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const { data } = await api.post("/todos", {
-        id: Date.now,
+        id: Date.now(),
         title: payload.title,
         completed: false,
       });
@@ -97,33 +97,17 @@ const todoSlice = createSlice({
         state.loading = false;
         state.error = payload;
       })
-      .addCase(toggleAsyncTodo.pending, (state) => {
-        state.loading = true;
-        state.error = "";
-      })
       .addCase(toggleAsyncTodo.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        const selected = state.todos.find(
-          (todo) => todo.id === Number(payload.id)
-        );
-        selected.completed = payload.completed;
+        const selectedTodo = state.todos.find((todo) => todo.id === payload.id);
+        selectedTodo.completed = payload.completed;
       })
       .addCase(toggleAsyncTodo.rejected, (state, { payload }) => {
-        state.loading = false;
         state.error = payload;
       })
-      .addCase(deleteAsyncTodo.pending, (state) => {
-        state.loading = true;
-        state.error = "";
-      })
       .addCase(deleteAsyncTodo.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        state.todos = state.todos.filter(
-          (todo) => todo.id !== Number(payload.id)
-        );
+        state.todos = state.todos.filter((todo) => todo.id !== payload);
       })
       .addCase(deleteAsyncTodo.rejected, (state, { payload }) => {
-        state.loading = false;
         state.error = payload;
       });
   },

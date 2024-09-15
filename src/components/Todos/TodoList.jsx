@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import { getAsyncTodos } from "../../features/todo/todoSlice";
 
 const TodoList = () => {
-  const dispatch = useDispatch();
   const { loading, todos, error } = useSelector((state) => state.todos);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAsyncTodos());
